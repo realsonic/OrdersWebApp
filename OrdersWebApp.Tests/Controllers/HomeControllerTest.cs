@@ -1,6 +1,5 @@
 ﻿using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OrdersWebApp;
 using OrdersWebApp.Controllers;
 
 namespace OrdersWebApp.Tests.Controllers

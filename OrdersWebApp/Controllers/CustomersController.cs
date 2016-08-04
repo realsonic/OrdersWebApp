@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using OrdersWebApp.Models;
@@ -120,14 +118,15 @@ namespace OrdersWebApp.Controllers
 
         // POST: api/Customers/{id}
         [ResponseType(typeof(Order))]
-        public IHttpActionResult PostOrder(int customerId, Order order)
+        public IHttpActionResult PostOrder(int id, Order order)
         {
-            if (!ModelState.IsValid)
+            /* CustomerId не задан => модель невалидна; но NULL для CustomerId делать неправильно, т.к. ордера будут висеть без кастомеров
+             * if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
+            }*/
 
-            var customer = _db.Customers.Include(c => c.Orders).FirstOrDefault(c => c.Id == customerId);
+            var customer = _db.Customers.Include(c => c.Orders).FirstOrDefault(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound();
@@ -136,8 +135,10 @@ namespace OrdersWebApp.Controllers
             customer.Orders.Add(order);
             _db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = order.Id }, order);
+            return CreatedAtRoute("DefaultApi", new { id }, order);
         }
+
+
 
         /* Закомментирован, т.к. пока не нужен // DELETE: api/Customers/5
         [ResponseType(typeof(Customer))]

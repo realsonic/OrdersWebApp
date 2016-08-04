@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace OrdersWebApp.Models
 {
@@ -15,6 +16,7 @@ namespace OrdersWebApp.Models
 
         [Required]
         public int CustomerId { get; set; }
-        public virtual Customer Customer { get; set; }
+        [JsonIgnore]
+        public Customer Customer { get; set; }
     }
 }
