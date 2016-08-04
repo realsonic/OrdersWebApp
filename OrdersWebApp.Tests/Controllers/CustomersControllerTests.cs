@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Web.Http.Results;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OrdersWebApp.Controllers;
 using OrdersWebApp.Models;
 
@@ -11,11 +14,13 @@ namespace OrdersWebApp.Tests.Controllers
         public void GetCustomersTest()
         {
             var controller = new CustomersController();
-            var jsonResult = controller.GetCustomers();
+            var result = controller.GetCustomers();
 
-            Assert.IsNotNull(jsonResult);
-            var customers = jsonResult.Content;
-            Assert.IsNotNull(customers);
+            Assert.IsNotNull(result);
+
+            var genType = result.GetType().GetGenericTypeDefinition();
+            Assert.AreEqual(genType, typeof(OkNegotiatedContentResult<>),
+                $"Result generic type is {genType}, but should be OkNegotiatedContentResult<>");
         }
 
         [TestMethod]

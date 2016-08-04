@@ -17,7 +17,7 @@ namespace OrdersWebApp.Controllers
     {
         private readonly OrdersContext _db = new OrdersContext();
 
-        // GET: api/Customers
+        /*// GET: api/Customers
         public JsonResult<List<Customer>> GetCustomers()
         {
             var data = _db.Customers.ToList();
@@ -27,8 +27,15 @@ namespace OrdersWebApp.Controllers
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     ContractResolver = new FlatCustomerContractResolver()
                 });
+        }*/
+
+        // GET: api/Customers
+        public IHttpActionResult GetCustomers()
+        {
+            return Ok(_db.Customers.Select(c => new {c.Name, c.Email}));
         }
 
+/*
         private class FlatCustomerContractResolver : DefaultContractResolver
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
@@ -43,6 +50,7 @@ namespace OrdersWebApp.Controllers
                 return property;
             }
         }
+*/
 
         // GET: api/Customers/5
         [ResponseType(typeof(Customer))]
