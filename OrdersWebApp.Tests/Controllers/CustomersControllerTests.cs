@@ -13,17 +13,23 @@ namespace OrdersWebApp.Tests.Controllers
     [TestClass]
     public class CustomersControllerTests
     {
-        private static readonly Customer JohnSmithCustomer = new Customer
+        private static readonly Customer JohnInitCustomer = new Customer
         {
-            Name = "John Smith",
-            Email = "johnsmith@mail.ru",
+            Name = "John Init",
+            Email = "johninit@mail.ru",
             Orders = new List<Order> {new Order {Price = 1000, CreatedDate = DateTime.Now}}
         };
 
-        private static readonly Customer JohnDoeCustomer = new Customer
+        private static readonly Customer JohnPostCustomer = new Customer
         {
-            Name = "John Doe",
-            Email = "johndoe@gmail.com"
+            Name = "John Post",
+            Email = "johnpost@gmail.com"
+        };
+
+        private static readonly Order JohnInitPostOrder = new Order
+        {
+            Price = 2000,
+            CreatedDate = DateTime.Now.AddDays(-5)
         };
 
         [TestInitialize]
@@ -33,7 +39,7 @@ namespace OrdersWebApp.Tests.Controllers
             using (var db = new OrdersContext())
             {
                 // add John Smith
-                db.Customers.Add(JohnSmithCustomer);
+                db.Customers.Add(JohnInitCustomer);
                 db.SaveChanges();
             }
         }
@@ -78,17 +84,17 @@ namespace OrdersWebApp.Tests.Controllers
             IHttpActionResult result;
             using (var controller = new CustomersController())
             {
-                result = controller.GetCustomer(JohnSmithCustomer.Id);
+                result = controller.GetCustomer(JohnInitCustomer.Id);
             }
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(OkNegotiatedContentResult<Customer>));
             var customer = (result as OkNegotiatedContentResult<Customer>)?.Content;
             Assert.IsNotNull(customer);
-            Assert.AreEqual(JohnSmithCustomer.Id, customer.Id);
-            Assert.AreEqual(JohnSmithCustomer.Name, customer.Name);
-            Assert.AreEqual(JohnSmithCustomer.Email, customer.Email);
-            Assert.AreEqual(JohnSmithCustomer.Orders.Count, customer.Orders.Count);
+            Assert.AreEqual(JohnInitCustomer.Id, customer.Id);
+            Assert.AreEqual(JohnInitCustomer.Name, customer.Name);
+            Assert.AreEqual(JohnInitCustomer.Email, customer.Email);
+            Assert.AreEqual(JohnInitCustomer.Orders?.Count, customer.Orders?.Count);
         }
 
         [TestMethod]
@@ -97,16 +103,16 @@ namespace OrdersWebApp.Tests.Controllers
             IHttpActionResult result;
             using (var controller = new CustomersController())
             {
-                result = controller.PostCustomer(JohnDoeCustomer);
+                result = controller.PostCustomer(JohnPostCustomer);
             }
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<Customer>));
             var customer = (result as CreatedAtRouteNegotiatedContentResult<Customer>)?.Content;
             Assert.IsNotNull(customer);
-            Assert.AreEqual(JohnDoeCustomer.Id, customer.Id);
-            Assert.AreEqual(JohnDoeCustomer.Name, customer.Name);
-            Assert.AreEqual(JohnDoeCustomer.Email, customer.Email);
+            Assert.AreEqual(JohnPostCustomer.Id, customer.Id);
+            Assert.AreEqual(JohnPostCustomer.Name, customer.Name);
+            Assert.AreEqual(JohnPostCustomer.Email, customer.Email);
         }
 
         [TestMethod]
@@ -115,8 +121,16 @@ namespace OrdersWebApp.Tests.Controllers
             IHttpActionResult result;
             using (var controller = new CustomersController())
             {
-                //result = controller.PostOrder();
+                result = controller.PostOrder(JohnInitCustomer.Id, JohnInitPostOrder);
             }
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<Order>));
+            var order = (result as CreatedAtRouteNegotiatedContentResult<Order>)?.Content;
+            Assert.IsNotNull(order);
+            Assert.AreEqual(JohnInitPostOrder.Id, order.Id);
+            Assert.AreEqual(JohnInitPostOrder.Price, order.Price);
+            Assert.AreEqual(JohnInitPostOrder.CreatedDate, order.CreatedDate);
         }
     }
 }

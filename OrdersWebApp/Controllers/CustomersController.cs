@@ -127,7 +127,7 @@ namespace OrdersWebApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            var customer = _db.Customers.Find(customerId);
+            var customer = _db.Customers.Include(c => c.Orders).FirstOrDefault(c => c.Id == customerId);
             if (customer == null)
             {
                 return NotFound();
@@ -139,8 +139,7 @@ namespace OrdersWebApp.Controllers
             return CreatedAtRoute("DefaultApi", new { id = order.Id }, order);
         }
 
-        /* Закомментирован, т.к. пока не нужен
-         * // DELETE: api/Customers/5
+        /* Закомментирован, т.к. пока не нужен // DELETE: api/Customers/5
         [ResponseType(typeof(Customer))]
         public IHttpActionResult DeleteCustomer(int id)
         {
