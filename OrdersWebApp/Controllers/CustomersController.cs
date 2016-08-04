@@ -13,7 +13,8 @@ namespace OrdersWebApp.Controllers
     {
         private readonly OrdersContext _db = new OrdersContext();
 
-        /*// GET: api/Customers
+        /* Вариант с возвращаемыми Customer'ами, но без Orders
+         * // GET: api/Customers
         public JsonResult<List<Customer>> GetCustomers()
         {
             var data = _db.Customers.ToList();
@@ -23,15 +24,8 @@ namespace OrdersWebApp.Controllers
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     ContractResolver = new FlatCustomerContractResolver()
                 });
-        }*/
-
-        // GET: api/Customers
-        public IEnumerable<dynamic> GetCustomers()
-        {
-            return _db.Customers.Select(c => new {c.Id, c.Name, c.Email});
         }
-
-/*
+        
         private class FlatCustomerContractResolver : DefaultContractResolver
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
@@ -46,7 +40,13 @@ namespace OrdersWebApp.Controllers
                 return property;
             }
         }
-*/
+        */
+
+        // GET: api/Customers
+        public IEnumerable<dynamic> GetCustomers()
+        {
+            return _db.Customers.Select(c => new {c.Id, c.Name, c.Email});
+        }
 
         // GET: api/Customers/5
         [ResponseType(typeof(Customer))]
@@ -61,7 +61,8 @@ namespace OrdersWebApp.Controllers
             return Ok(customer);
         }
 
-        // PUT: api/Customers/5
+        /* Закомментирован, т.к. пока не нужен
+         * // PUT: api/Customers/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCustomer(int id, Customer customer)
         {
@@ -93,6 +94,11 @@ namespace OrdersWebApp.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        private bool CustomerExists(int id)
+        {
+            return _db.Customers.Count(e => e.Id == id) > 0;
+        }*/
+
         // POST: api/Customers
         [ResponseType(typeof(Customer))]
         public IHttpActionResult PostCustomer(Customer customer)
@@ -108,7 +114,8 @@ namespace OrdersWebApp.Controllers
             return CreatedAtRoute("DefaultApi", new {id = customer.Id}, customer);
         }
 
-        // DELETE: api/Customers/5
+        /* Закомментирован, т.к. пока не нужен
+         * // DELETE: api/Customers/5
         [ResponseType(typeof(Customer))]
         public IHttpActionResult DeleteCustomer(int id)
         {
@@ -122,7 +129,7 @@ namespace OrdersWebApp.Controllers
             _db.SaveChanges();
 
             return Ok(customer);
-        }
+        }*/
 
         protected override void Dispose(bool disposing)
         {
@@ -131,11 +138,6 @@ namespace OrdersWebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool CustomerExists(int id)
-        {
-            return _db.Customers.Count(e => e.Id == id) > 0;
         }
     }
 }
