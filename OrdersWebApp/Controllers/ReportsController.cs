@@ -19,19 +19,22 @@ namespace OrdersWebApp.Controllers
                         var avgOrders = (float) ordersCount / customersCount;
                         var avgPrice = db.Orders.Average(o => o.Price);
 
-                        return
-                            Ok(
-                                new
-                                {
-                                    CustomersCount = customersCount,
-                                    OrdersCount = ordersCount,
-                                    AvgOrders = avgOrders,
-                                    AvgPrice = avgPrice
-                                });
+                        return Ok(FormTotalReport(customersCount, ordersCount, avgOrders, avgPrice));
                     }
                 default:
                     return BadRequest($"Unknown report named {id}");
             }
+        }
+
+        public static object FormTotalReport(int customersCount, int ordersCount, float avgOrders, double avgPrice)
+        {
+            return new
+            {
+                CustomersCount = customersCount,
+                OrdersCount = ordersCount,
+                AvgOrders = avgOrders,
+                AvgPrice = avgPrice
+            };
         }
     }
 }
