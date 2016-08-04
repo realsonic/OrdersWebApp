@@ -23,7 +23,10 @@ namespace OrdersWebApp
             // Формат вывода
             var json = config.Formatters.JsonFormatter;
             json.SerializerSettings.PreserveReferencesHandling =
-                Newtonsoft.Json.PreserveReferencesHandling.Objects;
+                Newtonsoft.Json.PreserveReferencesHandling.None;
+#if DEBUG
+            json.Indent = true;
+#endif
 
             config.Formatters.Remove(config.Formatters.XmlFormatter);
         }

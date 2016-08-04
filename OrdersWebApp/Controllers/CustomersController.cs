@@ -3,12 +3,8 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.Results;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrdersWebApp.Models;
 
 namespace OrdersWebApp.Controllers
@@ -30,9 +26,9 @@ namespace OrdersWebApp.Controllers
         }*/
 
         // GET: api/Customers
-        public IHttpActionResult GetCustomers()
+        public IEnumerable<dynamic> GetCustomers()
         {
-            return Ok(_db.Customers.Select(c => new {c.Name, c.Email}));
+            return _db.Customers.Select(c => new {c.Id, c.Name, c.Email});
         }
 
 /*
@@ -56,7 +52,7 @@ namespace OrdersWebApp.Controllers
         [ResponseType(typeof(Customer))]
         public IHttpActionResult GetCustomer(int id)
         {
-            Customer customer = _db.Customers.Find(id);
+            var customer = _db.Customers.Find(id);
             if (customer == null)
             {
                 return NotFound();
@@ -116,7 +112,7 @@ namespace OrdersWebApp.Controllers
         [ResponseType(typeof(Customer))]
         public IHttpActionResult DeleteCustomer(int id)
         {
-            Customer customer = _db.Customers.Find(id);
+            var customer = _db.Customers.Find(id);
             if (customer == null)
             {
                 return NotFound();

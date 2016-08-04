@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Web.Http.Results;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OrdersWebApp.Controllers;
 using OrdersWebApp.Models;
@@ -17,15 +15,14 @@ namespace OrdersWebApp.Tests.Controllers
             var result = controller.GetCustomers();
 
             Assert.IsNotNull(result);
-
-            var genType = result.GetType().GetGenericTypeDefinition();
-            Assert.AreEqual(genType, typeof(OkNegotiatedContentResult<>),
-                $"Result generic type is {genType}, but should be OkNegotiatedContentResult<>");
+            Assert.AreEqual(1, result.Count());
         }
 
         [TestMethod]
         public void GetCustomerTest()
         {
+
+
             Assert.Fail();
         }
 
