@@ -160,6 +160,9 @@
     <EmbeddedResource Include="Migrations\201608031929144_InitialCreate.resx">
       <DependentUpon>201608031929144_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608041457025_Required.resx">
+      <DependentUpon>201608041457025_Required.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -204,6 +207,10 @@
     <Compile Include="Migrations\201608031929144_InitialCreate.cs" />
     <Compile Include="Migrations\201608031929144_InitialCreate.Designer.cs">
       <DependentUpon>201608031929144_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608041457025_Required.cs" />
+    <Compile Include="Migrations\201608041457025_Required.Designer.cs">
+      <DependentUpon>201608041457025_Required.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Customer.cs" />

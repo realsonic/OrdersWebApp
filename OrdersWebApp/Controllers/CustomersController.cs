@@ -13,8 +13,7 @@ namespace OrdersWebApp.Controllers
     {
         private readonly OrdersContext _db = new OrdersContext();
 
-        /* Вариант с возвращаемыми Customer'ами, но без Orders
-         * // GET: api/Customers
+        /* Вариант с возвращаемыми Customer'ами, но без Orders // GET: api/Customers
         public JsonResult<List<Customer>> GetCustomers()
         {
             var data = _db.Customers.ToList();
@@ -42,17 +41,23 @@ namespace OrdersWebApp.Controllers
         }
         */
 
-        // GET: api/Customers
+        /* Вариант без Orders: null, но не типизированный // GET: api/Customers
         public IEnumerable<dynamic> GetCustomers()
         {
             return _db.Customers.Select(c => new {c.Id, c.Name, c.Email});
+        }  */      
+        
+        // GET: api/Customers
+        public IEnumerable<Customer> GetCustomers()
+        {
+            return _db.Customers;
         }
 
         // GET: api/Customers/5
         [ResponseType(typeof(Customer))]
         public IHttpActionResult GetCustomer(int id)
         {
-            var customer = _db.Customers.Find(id);
+            var customer = _db.Customers.Include(c => c.Orders).FirstOrDefault(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound();
@@ -61,8 +66,7 @@ namespace OrdersWebApp.Controllers
             return Ok(customer);
         }
 
-        /* Закомментирован, т.к. пока не нужен
-         * // PUT: api/Customers/5
+        /* Закомментирован, т.к. пока не нужен // PUT: api/Customers/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCustomer(int id, Customer customer)
         {
@@ -112,6 +116,27 @@ namespace OrdersWebApp.Controllers
             _db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new {id = customer.Id}, customer);
+        }
+
+        // POST: api/Customers/{id}
+        [ResponseType(typeof(Order))]
+        public IHttpActionResult PostOrder(int customerId, Order order)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var customer = _db.Customers.Find(customerId);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            customer.Orders.Add(order);
+            _db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = order.Id }, order);
         }
 
         /* Закомментирован, т.к. пока не нужен

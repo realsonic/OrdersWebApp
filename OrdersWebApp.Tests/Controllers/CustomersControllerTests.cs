@@ -1,5 +1,8 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Web.Http;
 using System.Web.Http.Results;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OrdersWebApp.Controllers;
@@ -12,14 +15,13 @@ namespace OrdersWebApp.Tests.Controllers
     {
         private static readonly Customer JohnSmithCustomer = new Customer
         {
-            Id = 1,
             Name = "John Smith",
-            Email = "johnsmith@mail.ru"
+            Email = "johnsmith@mail.ru",
+            Orders = new List<Order> {new Order {Price = 1000, CreatedDate = DateTime.Now}}
         };
 
         private static readonly Customer JohnDoeCustomer = new Customer
         {
-            Id = 2,
             Name = "John Doe",
             Email = "johndoe@gmail.com"
         };
@@ -42,11 +44,7 @@ namespace OrdersWebApp.Tests.Controllers
             // we are connected to local db
             using (var db = new OrdersContext())
             {
-                // clean all tables
-                foreach (var order in db.Orders)
-                {
-                    db.Entry(order).State = EntityState.Deleted;
-                }
+                // clean Customers, Orders will be cleaned cascaded
                 foreach (var customer in db.Customers)
                 {
                     db.Entry(customer).State = EntityState.Deleted;
@@ -58,11 +56,12 @@ namespace OrdersWebApp.Tests.Controllers
         [TestMethod]
         public void GetCustomersTest()
         {
-            var controller = new CustomersController();
-            var result = controller.GetCustomers();
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(GetCustomersCountFromDb(), result.Count());
+            using (var controller = new CustomersController())
+            {
+                var result = controller.GetCustomers();
+                Assert.IsNotNull(result);
+                Assert.AreEqual(GetCustomersCountFromDb(), result.Count());
+            }
         }
 
         private static int GetCustomersCountFromDb()
@@ -76,8 +75,11 @@ namespace OrdersWebApp.Tests.Controllers
         [TestMethod]
         public void GetCustomerTest()
         {
-            var controller = new CustomersController();
-            var result = controller.GetCustomer(JohnSmithCustomer.Id);
+            IHttpActionResult result;
+            using (var controller = new CustomersController())
+            {
+                result = controller.GetCustomer(JohnSmithCustomer.Id);
+            }
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(OkNegotiatedContentResult<Customer>));
@@ -86,13 +88,17 @@ namespace OrdersWebApp.Tests.Controllers
             Assert.AreEqual(JohnSmithCustomer.Id, customer.Id);
             Assert.AreEqual(JohnSmithCustomer.Name, customer.Name);
             Assert.AreEqual(JohnSmithCustomer.Email, customer.Email);
+            Assert.AreEqual(JohnSmithCustomer.Orders.Count, customer.Orders.Count);
         }
 
         [TestMethod]
         public void PostCustomerTest()
         {
-            var controller = new CustomersController();
-            var result = controller.PostCustomer(JohnDoeCustomer);
+            IHttpActionResult result;
+            using (var controller = new CustomersController())
+            {
+                result = controller.PostCustomer(JohnDoeCustomer);
+            }
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<Customer>));
@@ -101,6 +107,16 @@ namespace OrdersWebApp.Tests.Controllers
             Assert.AreEqual(JohnDoeCustomer.Id, customer.Id);
             Assert.AreEqual(JohnDoeCustomer.Name, customer.Name);
             Assert.AreEqual(JohnDoeCustomer.Email, customer.Email);
+        }
+
+        [TestMethod]
+        public void PostOrderTest()
+        {
+            IHttpActionResult result;
+            using (var controller = new CustomersController())
+            {
+                //result = controller.PostOrder();
+            }
         }
     }
 }
